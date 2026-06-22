@@ -154,45 +154,6 @@
 
     </el-card>
 
-    <h3>权限配置</h3>
-    <el-card style="margin-top: 20px;">
-
-      <el-radio-group v-model="postForm.openType" style="margin-bottom: 20px">
-        <el-radio :label="1" border>完全公开</el-radio>
-        <el-radio :label="2" border>部门开放</el-radio>
-      </el-radio-group>
-
-      <el-alert
-        v-if="postForm.openType===1"
-        title="开放的，任何人都可以进行考试！"
-        type="warning"
-      />
-
-      <div v-if="postForm.openType===2">
-        <el-input
-          v-model="filterText"
-          placeholder="输入关键字进行过滤"
-        />
-
-        <el-tree
-
-          v-loading="treeLoading"
-          ref="tree"
-          :data="treeData"
-          :default-checked-keys="postForm.departIds"
-          :props="defaultProps"
-          :filter-node-method="filterNode"
-          empty-text=" "
-          default-expand-all
-          show-checkbox
-          node-key="id"
-          @check-change="handleCheckChange"
-        />
-
-      </div>
-
-    </el-card>
-
     <div style="margin-top: 20px">
       <el-button type="primary" @click="handleSave">保存</el-button>
     </div>
@@ -202,7 +163,6 @@
 
 <script>
 import { fetchDetail, saveData } from '@/api/exam/exam'
-import { fetchTree } from '@/api/sys/depart/depart'
 import RepoSelect from '@/components/RepoSelect'
 
 export default {
@@ -211,12 +171,6 @@ export default {
   data() {
     return {
 
-      treeData: [],
-      defaultProps: {
-        label: 'deptName'
-      },
-      filterText: '',
-      treeLoading: false,
       dateValues: [],
       // 题库
       repoList: [],
@@ -228,9 +182,7 @@ export default {
         // 题库列表
         repoList: [],
         // 开放类型
-        openType: 1,
-        // 考试班级列表
-        departIds: []
+        openType: 1
       },
       rules: {
         title: [
@@ -268,10 +220,6 @@ export default {
   },
 
   watch: {
-
-    filterText(val) {
-      this.$refs.tree.filter(val)
-    },
 
     dateValues: {
 
@@ -317,10 +265,6 @@ export default {
     if (typeof id !== undefined) {
       this.fetchData(id)
     }
-
-    fetchTree({}).then(response => {
-      this.treeData = response.data
-    })
   },
   methods: {
 
@@ -396,16 +340,6 @@ export default {
       })
     },
 
-    handleCheckChange() {
-      const that = this
-      // 置空
-      this.postForm.departIds = []
-      const nodes = this.$refs.tree.getCheckedNodes()
-      nodes.forEach(function(item) {
-        that.postForm.departIds.push(item.id)
-      })
-    },
-
     // 添加子项
     handleAdd() {
       this.repoList.push({ id: '', rowId: new Date().getTime(), radioCount: 0, radioScore: 0, multiCount: 0, multiScore: 0, judgeCount: 0, judgeScore: 0, saqCount: 0, saqScore: 0 })
@@ -443,11 +377,6 @@ export default {
       })
     },
 
-    filterNode(value, data) {
-      if (!value) return true
-      return data.deptName.indexOf(value) !== -1
-    },
-
     repoChange(e, row) {
       // 赋值ID
       row.id = e.id
@@ -466,4 +395,3 @@ export default {
   }
 }
 </script>
-

@@ -10,9 +10,9 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yf_exam?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/yf_exam_lite?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
     username: root
-    password: root
+    password: 35323093asd
     # druid相关配置
     druid:
       max-active: 5000
@@ -68,7 +68,7 @@ server:
 conf:
   upload:
     # 物理文件存储位置，以/结束，windows已正斜杠，如：d:/exam-upload/
-    dir: /data/upload/
+    dir: e:/exam-upload/
     # 访问地址，注意不要去除/upload/file/，此节点为虚拟标识符
     # 如：http://localhost:8101/upload/file/exam.jpg，对应物理文件为：/data/upload/exam.jpg
     url: http://localhost:8101/upload/file/

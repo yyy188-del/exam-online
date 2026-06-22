@@ -7,3 +7,11 @@ import { post } from '@/utils/request'
 export function listPaper(userId, examId) {
   return post('/exam/api/paper/paper/paging', { current: 1, size: 5, params: { userId: userId, examId: examId }})
 }
+
+export function listCaptures(paperId) {
+  return post('/exam/api/paper/paper/capture', { id: paperId })
+}
+
+export function paperStats(examId) {
+  return post('/exam/api/paper/paper/stats', { id: examId })
+}

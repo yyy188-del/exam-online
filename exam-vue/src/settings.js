@@ -1,5 +1,5 @@
 module.exports = {
-  title: '云帆考试培训系统',
+  title: '在线学习考试平台',
 
   /**
    * @type {boolean} true | false

@@ -84,10 +84,6 @@
           <el-input v-model="formData.password" placeholder="不修改请留空" type="password" />
         </el-form-item>
 
-        <el-form-item label="部门">
-          <depart-tree-select v-model="formData.departId" :options="treeData" :props="defaultProps" />
-        </el-form-item>
-
         <el-form-item label="角色">
           <meet-role v-model="formData.roles" />
         </el-form-item>
@@ -116,12 +112,10 @@
 import DataTable from '@/components/DataTable'
 import MeetRole from '@/components/MeetRole'
 import { saveData } from '@/api/sys/user/user'
-import DepartTreeSelect from '@/components/DepartTreeSelect'
-import { fetchTree } from '@/api/sys/depart/depart'
 
 export default {
   name: 'SysUserList',
-  components: { DepartTreeSelect, DataTable, MeetRole },
+  components: { DataTable, MeetRole },
   filters: {
 
     // 订单状态
@@ -136,12 +130,6 @@ export default {
   data() {
     return {
 
-      treeData: [],
-      defaultProps: {
-        value: 'id',
-        label: 'deptName',
-        children: 'children'
-      },
       dialogVisible: false,
 
       listQuery: {
@@ -180,9 +168,6 @@ export default {
   },
 
   created() {
-    fetchTree({}).then(response => {
-      this.treeData = response.data
-    })
   },
 
   methods: {
@@ -206,9 +191,6 @@ export default {
       console.log(JSON.stringify(this.formData))
     },
 
-    departSelected(data) {
-      this.formData.departId = data.id
-    },
     handleSave() {
       saveData(this.formData).then(() => {
         this.$message({

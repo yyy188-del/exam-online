@@ -110,7 +110,7 @@ export const asyncRoutes = [
     redirect: '/my/exam',
     name: 'Online',
     meta: {
-      title: '在线考试',
+      title: '我的考试',
       icon: 'list',
       roles: ['student', 'sa']
     },
@@ -120,7 +120,7 @@ export const asyncRoutes = [
         path: 'exam',
         component: () => import('@/views/paper/exam/list'),
         name: 'ExamOnline',
-        meta: { title: '在线考试', noCache: true, icon: 'guide' }
+        meta: { title: '我的考试', noCache: true, icon: 'guide' }
       },
 
       {
@@ -171,7 +171,7 @@ export const asyncRoutes = [
     redirect: '/exam/repo',
     name: 'Manage',
     meta: {
-      title: '考试管理',
+      title: '后台管理',
       icon: 'example',
       roles: ['sa', 'teacher']
     },
@@ -263,6 +263,26 @@ export const asyncRoutes = [
   },
 
   {
+    path: '/notice',
+    component: Layout,
+    redirect: '/notice/list',
+    name: 'Notice',
+    meta: {
+      title: '考试公告',
+      icon: 'message',
+      roles: ['sa', 'student', 'teacher']
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/notice/index'),
+        name: 'ListNotice',
+        meta: { title: '公告列表', noCache: true, icon: 'list' }
+      }
+    ]
+  },
+
+  {
     path: '/sys',
     component: Layout,
     redirect: '/sys/config',
@@ -278,13 +298,6 @@ export const asyncRoutes = [
         component: () => import('@/views/sys/config'),
         name: 'SysConfig',
         meta: { title: '系统配置', icon: 'theme' }
-      },
-
-      {
-        path: 'depart',
-        component: () => import('@/views/sys/depart'),
-        name: 'SysDepart',
-        meta: { title: '部门管理', icon: 'tree' }
       },
 
       {

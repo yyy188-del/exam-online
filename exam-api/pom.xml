@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.yfhl</groupId>
-    <artifactId>exam-api</artifactId>
+    <groupId>com.yy</groupId>
+    <artifactId>online-exam</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
-    <name>exam-api</name>
+    <name>online-exam</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,7 +22,7 @@
         <apache.commons.version>3.8</apache.commons.version>
         <mysql.driver.version>8.0.11</mysql.driver.version>
         <mybatis-plus.version>3.4.1</mybatis-plus.version>
-        <lombok.version>1.18.4</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
         <alicloud.version>2.1.1.RELEASE</alicloud.version>
         <poi.version>3.9</poi.version>
@@ -197,6 +197,13 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 

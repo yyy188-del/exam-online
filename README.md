@@ -1,94 +1,211 @@
-# 在线考试系统 开源版
+﻿# 在线考试系统
 
-# 项目演示
-开源版本：https://lite.yfhl.net  
-管理账号：admin/admin    
-学员账号：person/person
+基于 Spring Boot + Vue.js 的在线考试系统，支持三种角色：超级管理员、教师、学生。
 
-注意事项：演示环境数据每天晚上会重新初始化，不要往上面导入重要数据；如果账号密码被改无法登录，请联系我们；或等到第二天再访问 :joy: 
+## 技术栈
 
-# 商业版本
-如果开源版本无法满足您的需求，或者有需求需要定制，可以考虑我们的商业版本     
-商业版演示地址：https://exam.yfhl.net   
-商业版官网地址：https://www.jeedocm.com/?plan=githuby
+| 层级 | 技术 |
+|------|------|
+| 后端框架 | Spring Boot 2.1.4 |
+| 安全框架 | Apache Shiro + JWT |
+| ORM | MyBatis-Plus 3.4.1 |
+| 数据库 | MySQL 5.7+ |
+| 连接池 | Druid 1.2.6 |
+| 前端框架 | Vue 2.6 + Element UI |
+| 构建工具 | Maven + Vue CLI |
+| 开发语言 | Java 8 |
 
-QQ交流群：757328773
+## 项目结构
 
+`
+yfexam-exam/
+├── exam-api/                  # 后端 Spring Boot 项目
+│   ├── src/main/java/com/yy/exam/
+│   │   ├── ability/           # 通用能力（Shiro、JWT、文件上传、定时任务）
+│   │   ├── config/            # 配置类（CORS、Shiro、SPA路由）
+│   │   ├── core/              # 核心工具类
+│   │   └── modules/           # 业务模块
+│   │       ├── exam/          # 考试管理
+│   │       ├── paper/         # 试卷管理
+│   │       ├── qu/            # 题库管理
+│   │       ├── repo/          # 题库分类
+│   │       ├── notice/        # 通知公告
+│   │       ├── sys/           # 系统管理（用户、角色、部门、配置）
+│   │       └── user/          # 用户相关（考试记录、错题本）
+│   └── src/main/resources/
+│       ├── application.yml    # 主配置
+│       └── application-dev.yml # 开发环境配置
+├── exam-vue/                  # 前端 Vue 项目
+│   └── src/
+│       ├── api/               # API 接口
+│       ├── router/            # 路由配置
+│       ├── store/             # Vuex 状态管理
+│       ├── utils/             # 工具函数
+│       └── views/             # 页面组件
+│           ├── dashboard/     # 控制台
+│           ├── exam/          # 考试管理
+│           ├── my/            # 我的考试
+│           ├── paper/         # 试卷
+│           ├── qu/            # 题库
+│           ├── repo/          # 题库分类
+│           ├── sys/           # 系统管理
+│           └── user/          # 用户管理
+└── docs/                      # 文档和SQL脚本
+    └── 安装资源/
+        ├── yy_exam.sql          # 数据库初始化脚本
+        └── notice.sql           # 通知公告表
+`
 
-# 商业版咨询
-杨经理：     
-    邮箱：626264481@qq.com   
-    手机：18710213152 
-    微信号：youyouwx0613     
+## 环境要求
 
-# 介绍
-一款多角色在线培训考试系统，系统集成了用户管理、角色管理、部门管理、题库管理、试题管理、试题导入导出、考试管理、在线考试、错题训练等功能，考试流程完善。
+| 工具 | 版本 | 说明 |
+|------|------|------|
+| JDK | 1.8+ | 推荐 JDK 8 |
+| MySQL | 5.7+ | 数据库服务 |
+| Maven | 3.6+ | 后端构建 |
+| Node.js | 8.9+ | 前端构建 |
+| npm | 3.0+ | 前端包管理 |
 
-# 技术栈
-SpringBoot / Shiro / Vue / MySQL
+## 快速开始
 
-# 产品功能
+### 1. 初始化数据库
 
-## 系统完善：完善的权限控制和用户系统
-权限控制：基于Shiro和JWT开发的权限控制功能。    
-用户系统：用户管理、部门管理、角色管理等。    
+创建数据库 yy_exam（字符集 UTF-8），导入 SQL 脚本：
 
-## 多角色：多角色支持    
-考试端：学生学员角色、支持在线考试、查看分数、训练错题。    
-管理端：题库管理、试题管理、考试管理、用户部门管理、查看考试情况等等。    
+先导入主脚本，再导入通知公告表：
 
-## 定员考试：考试权限定义    
-完全公开：任何人员都可以参与考试。    
-指定部门：只有选中部门的人员才可以看到考试。    
+`
+mysql -u root -p yy_exam < docs/安装资源/yy_exam.sql
+mysql -u root -p yy_exam < docs/安装资源/notice.sql
+`
 
-## 多题型：常用题型支持    
-支持题型：单选题、多选题、判断题。    
-难易程度：普通、困难。    
+### 2. 配置数据库连接
 
-## 便捷组卷：题库组卷    
-题库组卷：指定题库、分数、数量；题目、选项随机排序、杜绝作弊    
+编辑 exam-api/src/main/resources/application-dev.yml，修改数据库连接信息：
 
+`yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/yy_exam?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    username: root          # 改为你的数据库用户名
+    password: 你的密码       # 改为你的数据库密码
+`
 
-# 环境要求
-JDK 1.8+  [点此下载](https://cdn.yfhl.net/java-win/jdk-8u181-windows-x64.exe)        
-Mysql5.7+  [点此下载](https://cdn.yfhl.net/java-win/mysql-installer-community-5.7.31.0.msi)    
+### 3. 配置文件上传路径
 
-# 安装资源
-1、安装JDK1.8    
-https://cdn.yfhl.net/java-win/jdk-8u181-windows-x64.exe     
+编辑 exam-api/src/main/resources/application-dev.yml：
 
-2、安装MySQL    
-https://cdn.yfhl.net/java-win/mysql-installer-community-5.7.31.0.msi    
--- 安装过程可能需要VC++    
--- https://www.microsoft.com/zh-CN/download/details.aspx?id=40784    
--- 安装数据库管理工具    
-https://cdn.yfhl.net/java-win/SQLyog.12.3.1.0.zip    
+`yaml
+conf:
+  upload:
+    # Windows 示例：d:/exam-upload/
+    # Linux/Mac 示例：/data/upload/
+    dir: /data/upload/
+    # 访问地址，注意保留 /upload/file/ 前缀
+    url: http://localhost:8080/upload/file/
+    # 允许上传的文件后缀
+    allow-extensions: jpg,jpeg,png
+`
 
-# 安装视频    
-https://www.ixigua.com/7041491265027834381?utm_source=xiguastudio
+### 4. 启动后端
 
-# 快速运行（在docs/运行包目录下）
-1、安装Java环境，要求JDK版本大于1.8  
-2、自行安装MySQL数据库（版本最好是5.7），将`安装资源中`的`数据库初始化.sql`导入到安装好的数据库  
-3、请修改外置配置文件：application-local.yml 改成您自己的MySQL配置，dir: /data/upload/ 改为自己电脑存在的文件路径。  
-4、Windows通过start.bat运行，Linux运行start.sh运行  
-5、如果无意外，可通过：http://localhost:8101 访问到项目了  
-6、管理员账号密码：admin/admin 学员账号：person/person  
- 
-# 其它支持
-网站：https://www.jeedocm.com/?plan=githuby
+`ash
+cd exam-api
+mvn spring-boot:run
+`
 
-QQ交流群：757328773
+启动后访问：
+- 应用地址：http://localhost:8080
+- API 文档：http://localhost:8080/doc.html
 
+### 5. 启动前端（开发模式）
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1207/173238_e6c22c67_2189748.jpeg "17-32-10.jpg")
-![主界面](https://images.gitee.com/uploads/images/2020/1019/182239_4a87af30_2189748.jpeg "222.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/182532_04c42741_2189748.jpeg "444.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/182543_44dcc2d7_2189748.jpeg "555.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/182551_4d404492_2189748.jpeg "666.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/183109_fdc30de8_2189748.jpeg "777.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/183117_30b44530_2189748.jpeg "888.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/183023_2f3baeb9_2189748.jpeg "999.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/183032_f5016335_2189748.jpeg "1010.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/183040_38fd74ed_2189748.jpeg "1111.jpg")
-![输入图片说明](https://images.gitee.com/uploads/images/2020/1019/183047_a31619cd_2189748.jpeg "1212.jpg")
+`ash
+cd exam-vue
+npm install
+npm run dev
+`
+
+前端开发服务器启动后访问：http://localhost:9527
+
+> 前端开发服务器已配置代理，API 请求会自动转发到 http://localhost:8080。
+
+### 6. 生产部署
+
+构建前端并放入后端 static 目录，然后打包运行：
+
+`ash
+# 构建前端
+cd exam-vue
+npm run build:prod
+
+# 将 dist 目录内容复制到后端 static 目录
+cp -r dist/* ../exam-api/src/main/resources/static/
+
+# 构建后端 jar 包
+cd ../exam-api
+mvn clean package -DskipTests
+
+# 运行
+java -jar target/online-exam.jar
+`
+
+## 默认账号
+
+| 角色 | 用户名 | 密码 | 说明 |
+|------|--------|------|------|
+| 超级管理员 | admin | admin | 拥有全部权限 |
+| 教师 | teacher1 | teacher1 | 管理考试、题库、试卷 |
+| 学生 | person | person | 参加考试、查看成绩 |
+
+## 角色权限说明
+
+| 功能模块 | 超级管理员(sa) | 教师(teacher) | 学生(student) |
+|----------|:---:|:---:|:---:|
+| 控制台统计 | 全量数据 | 本人数据 | 本人数据 |
+| 考试管理 | 全量 | 本人创建 | 仅查看可参加考试 |
+| 题库管理 | 全量 | 本人创建 | 不可见 |
+| 试卷管理 | 全量 | 本人相关 | 仅本人试卷 |
+| 用户管理 | 全部操作 | 仅导入学生 | 不可见 |
+| 角色管理 | 全部操作 | 不可见 | 不可见 |
+| 部门管理 | 全部操作 | 不可见 | 不可见 |
+| 系统配置 | 全部操作 | 不可见 | 不可见 |
+| 通知公告 | 全部操作 | 全部操作 | 不可见 |
+| 参加考试 | 不可使用 | 不可使用 | 可用 |
+| 查看成绩 | 不可使用 | 不可使用 | 本人成绩 |
+| 错题本 | 不可使用 | 不可使用 | 可用 |
+
+## 安全特性
+
+- **JWT 认证**：无状态 Token 认证，有效期 7 天
+- **Shiro 权限控制**：基于角色的访问控制（RBAC），注解使用 OR 逻辑满足任一角色即可
+- **试卷所有权校验**：学生只能操作自己的试卷，防止越权查看/修改他人试卷
+- **角色导入限制**：教师批量导入用户时只能导入学生角色，超管可导入全部角色
+- **密码加密**：MD5 + 随机盐值加密
+- **SPA 路由支持**：Vue History 模式路由刷新不 404
+
+## 常见问题
+
+### 1. 前端访问后端 404
+
+确认后端已启动且端口为 8080。前端开发模式通过 ue.config.js 中的 proxy 转发 API 请求。
+
+### 2. 直接访问页面路由 404
+
+后端已配置 SpaRoutingFilter，会将非 API 的 GET 请求转发到 index.html，由 Vue Router 接管。
+
+### 3. 数据库连接失败
+
+检查 pplication-dev.yml 中的数据库配置，确保 MySQL 服务已启动且 yy_exam 数据库已创建。
+
+### 4. 文件上传失败
+
+检查 conf.upload.dir 配置的目录是否存在且有写入权限。
+
+### 5. 登录报"账号或密码错误"
+
+确认数据库已导入 SQL 脚本，默认账号密码见上方表格。
+
+## 许可证
+
+MIT License

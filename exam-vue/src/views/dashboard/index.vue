@@ -1,170 +1,279 @@
 <template>
-  <div class="dashboard-container">
-    <!-- 统计卡片 -->
-    <div class="stats-row">
-      <div class="stat-item" v-for="item in statCards" :key="item.key">
-        <div class="stat-body">
-          <div class="stat-left">
-            <div class="stat-value">{{ item.value }}</div>
-            <div class="stat-title">{{ item.title }}</div>
-          </div>
-          <div class="stat-icon" :style="{ background: item.color }">
-            <i :class="item.icon" />
+  <div>
+    <!-- ==================== 超管控制台 ==================== -->
+    <div v-if="isAdmin" class="dashboard-container">
+      <div class="stats-row">
+        <div class="stat-item" v-for="card in adminCards" :key="card.key">
+          <div class="stat-body">
+            <div class="stat-left">
+              <div class="stat-value">{{ card.value }}</div>
+              <div class="stat-title">{{ card.title }}</div>
+            </div>
+            <div class="stat-icon" :style="{ background: card.color }">
+              <i :class="card.icon" />
+            </div>
           </div>
         </div>
-        <div class="stat-footer">
-          <span>{{ item.desc }}</span>
+      </div>
+
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-data-line" style="margin-right: 8px; color: #1890ff" />
+              <span>快捷操作</span>
+            </div>
+            <div class="quick-actions">
+              <div class="action-item" @click="go('/exam/qu/add')">
+                <div class="action-icon" style="background: #e6f7ff">
+                  <i class="el-icon-edit-outline" style="color: #1890ff" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">添加试题</div>
+                  <div class="action-desc">手动添加考试题目</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+              <div class="action-item" @click="go('/exam/exam/add')">
+                <div class="action-icon" style="background: #fff7e6">
+                  <i class="el-icon-document" style="color: #faad14" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">创建考试</div>
+                  <div class="action-desc">创建新的考试安排</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+              <div class="action-item" @click="go('/sys/user')">
+                <div class="action-icon" style="background: #f6ffed">
+                  <i class="el-icon-user" style="color: #52c41a" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">用户管理</div>
+                  <div class="action-desc">管理系统用户</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+              <div class="action-item" @click="go('/exam/repo/add')">
+                <div class="action-icon" style="background: #f9f0ff">
+                  <i class="el-icon-plus" style="color: #722ed1" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">添加题库</div>
+                  <div class="action-desc">创建新的试题分类</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-info" style="margin-right: 8px; color: #1890ff" />
+              <span>操作提示</span>
+            </div>
+            <div class="tips-box">
+              <div class="tips-list">
+                <p>1. 先创建题库，再导入试题</p>
+                <p>2. 创建考试时关联题库抽题</p>
+                <p>3. 支持单选、多选、判断题</p>
+                <p>4. 可对用户进行角色分配</p>
+                <p>5. 系统配置可修改站点信息</p>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-upload2" style="margin-right: 8px; color: #1890ff" />
+              <span>数据导入</span>
+            </div>
+            <div class="import-box">
+              <div class="import-item">
+                <span>试题导入</span>
+                <el-button type="text" size="small" @click="downloadQuTemplate">下载模板</el-button>
+                <el-upload
+                  :show-file-list="false"
+                  :http-request="uploadQu"
+                  accept=".xlsx,.xls"
+                  style="display: inline-block"
+                >
+                  <el-button type="text" size="small" style="color: #52c41a">上传导入</el-button>
+                </el-upload>
+              </div>
+              <div class="import-item">
+                <span>用户导入</span>
+                <el-button type="text" size="small" @click="downloadUserTemplate">下载模板</el-button>
+                <el-upload
+                  :show-file-list="false"
+                  :http-request="uploadUser"
+                  accept=".xlsx,.xls"
+                  style="display: inline-block"
+                >
+                  <el-button type="text" size="small" style="color: #52c41a">上传导入</el-button>
+                </el-upload>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- ==================== 教师控制台 ==================== -->
+    <div v-else-if="isTeacher" class="dashboard-container">
+      <div class="stats-row">
+        <div class="stat-item" v-for="card in teacherCards" :key="card.key">
+          <div class="stat-body">
+            <div class="stat-left">
+              <div class="stat-value">{{ card.value }}</div>
+              <div class="stat-title">{{ card.title }}</div>
+            </div>
+            <div class="stat-icon" :style="{ background: card.color }">
+              <i :class="card.icon" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-data-line" style="margin-right: 8px; color: #1890ff" />
+              <span>快捷操作</span>
+            </div>
+            <div class="quick-actions">
+              <div class="action-item" @click="go('/exam/repo')">
+                <div class="action-icon" style="background: #e6f7ff">
+                  <i class="el-icon-collection" style="color: #1890ff" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">题库管理</div>
+                  <div class="action-desc">创建和管理试题题库</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+              <div class="action-item" @click="go('/exam/qu')">
+                <div class="action-icon" style="background: #f6ffed">
+                  <i class="el-icon-edit-outline" style="color: #52c41a" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">试题管理</div>
+                  <div class="action-desc">添加、编辑、导入试题</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+              <div class="action-item" @click="go('/exam/exam')">
+                <div class="action-icon" style="background: #fff7e6">
+                  <i class="el-icon-document" style="color: #faad14" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">考试管理</div>
+                  <div class="action-desc">创建和安排考试</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+              <div class="action-item" @click="go('/exam/repo/add')">
+                <div class="action-icon" style="background: #f9f0ff">
+                  <i class="el-icon-plus" style="color: #722ed1" />
+                </div>
+                <div class="action-info">
+                  <div class="action-name">添加题库</div>
+                  <div class="action-desc">创建新的试题分类</div>
+                </div>
+                <i class="el-icon-arrow-right action-arrow" />
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-info" style="margin-right: 8px; color: #1890ff" />
+              <span>操作提示</span>
+            </div>
+            <div class="tips-box">
+              <div class="tips-list">
+                <p>1. 先创建题库，再添加试题</p>
+                <p>2. 支持Excel批量导入试题</p>
+                <p>3. 创建考试时关联题库即可</p>
+                <p>4. 考试可设置开放时间和限时</p>
+                <p>5. 在考试记录中查看学生成绩</p>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" style="margin-top: 20px">
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-upload2" style="margin-right: 8px; color: #1890ff" />
+              <span>试题导入</span>
+            </div>
+            <div class="import-box">
+              <div class="import-item">
+                <span>批量导入试题</span>
+                <el-button type="text" size="small" @click="downloadQuTemplate">下载模板</el-button>
+                <el-upload
+                  :show-file-list="false"
+                  :http-request="uploadQu"
+                  accept=".xlsx,.xls"
+                  style="display: inline-block"
+                >
+                  <el-button type="text" size="small" style="color: #52c41a">上传导入</el-button>
+                </el-upload>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card class="panel-card">
+            <div slot="header" class="panel-header">
+              <i class="el-icon-user" style="margin-right: 8px; color: #52c41a" />
+              <span>用户导入</span>
+            </div>
+            <div class="import-box">
+              <div class="import-item">
+                <span>批量导入用户</span>
+                <el-button type="text" size="small" @click="downloadUserTemplate">下载模板</el-button>
+                <el-upload
+                  :show-file-list="false"
+                  :http-request="uploadUser"
+                  accept=".xlsx,.xls"
+                  style="display: inline-block"
+                >
+                  <el-button type="text" size="small" style="color: #52c41a">上传导入</el-button>
+                </el-upload>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+
+    <!-- ==================== 学生控制台 ==================== -->
+    <div v-else class="dashboard-container">
+      <div class="stats-row">
+        <div class="stat-item" v-for="card in studentCards" :key="card.key">
+          <div class="stat-body">
+            <div class="stat-left">
+              <div class="stat-value">{{ card.value }}</div>
+              <div class="stat-title">{{ card.title }}</div>
+            </div>
+            <div class="stat-icon" :style="{ background: card.color }">
+              <i :class="card.icon" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- 内容区域 -->
-    <el-row :gutter="20">
-      <!-- 左侧：数据导入 -->
-      <el-col :span="14">
-        <el-card class="panel-card" shadow="never">
-          <div slot="header" class="panel-header">
-            <i class="el-icon-upload2" style="color:#1890ff;font-size:18px;margin-right:8px;" />
-            <span>一键导入</span>
-          </div>
-
-          <el-tabs v-model="importTab" type="card">
-            <!-- 题库导入 -->
-            <el-tab-pane label="题库导入" name="repo">
-              <div class="import-section">
-                <div class="import-desc">
-                  <i class="el-icon-info" style="color:#1890ff;" />
-                  下载Excel模板，按格式填写试题后上传，支持单选、多选、判断题批量导入
-                </div>
-                <div class="import-actions">
-                  <el-button type="primary" icon="el-icon-download" @click="downloadQuTemplate">
-                    下载试题模板
-                  </el-button>
-                  <el-upload
-                    :show-file-list="false"
-                    :http-request="uploadQu"
-                    accept=".xls,.xlsx"
-                    style="display: inline-block; margin-left: 12px;"
-                  >
-                    <el-button type="success" icon="el-icon-upload2">
-                      上传试题文件
-                    </el-button>
-                  </el-upload>
-                </div>
-                <div class="import-steps">
-                  <el-steps :active="0" align-center>
-                    <el-step title="下载模板" description="按模板填写试题" />
-                    <el-step title="上传文件" description="选择Excel文件导入" />
-                    <el-step title="完成导入" description="试题自动加入题库" />
-                  </el-steps>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <!-- 学员导入 -->
-            <el-tab-pane label="学员导入" name="user">
-              <div class="import-section">
-                <div class="import-desc">
-                  <i class="el-icon-info" style="color:#52c41a;" />
-                  下载Excel模板，填写学员信息后上传，支持批量创建账号。角色可填：student(学员)、teacher(教师)、sa(管理员)
-                </div>
-                <div class="import-actions">
-                  <el-button type="primary" icon="el-icon-download" @click="downloadUserTemplate">
-                    下载学员模板
-                  </el-button>
-                  <el-upload
-                    :show-file-list="false"
-                    :http-request="uploadUser"
-                    accept=".xls,.xlsx"
-                    style="display: inline-block; margin-left: 12px;"
-                  >
-                    <el-button type="success" icon="el-icon-upload2">
-                      上传学员文件
-                    </el-button>
-                  </el-upload>
-                </div>
-                <div class="import-steps">
-                  <el-steps :active="0" align-center>
-                    <el-step title="下载模板" description="按模板填写学员信息" />
-                    <el-step title="上传文件" description="选择Excel文件导入" />
-                    <el-step title="完成导入" description="账号自动创建完成" />
-                  </el-steps>
-                </div>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
-      </el-col>
-
-      <!-- 右侧：快捷操作 + 使用提示 -->
-      <el-col :span="10">
-        <el-card class="panel-card" shadow="never">
-          <div slot="header" class="panel-header">
-            <i class="el-icon-s-operation" style="color:#13c2c2;font-size:18px;margin-right:8px;" />
-            <span>快捷操作</span>
-          </div>
-
-          <div class="quick-actions">
-            <div class="action-item" @click="$router.push({ name: 'AddExam' })">
-              <div class="action-icon" style="background: #e6f7ff; color: #1890ff;">
-                <i class="el-icon-edit-outline" />
-              </div>
-              <div class="action-info">
-                <div class="action-name">创建考试</div>
-                <div class="action-desc">设置考试规则与范围</div>
-              </div>
-              <i class="el-icon-arrow-right action-arrow" />
-            </div>
-            <div class="action-item" @click="$router.push({ name: 'AddQu' })">
-              <div class="action-icon" style="background: #f6ffed; color: #52c41a;">
-                <i class="el-icon-document-add" />
-              </div>
-              <div class="action-info">
-                <div class="action-name">添加试题</div>
-                <div class="action-desc">手动录入或批量导入</div>
-              </div>
-              <i class="el-icon-arrow-right action-arrow" />
-            </div>
-            <div class="action-item" @click="$router.push({ name: 'AddRepo' })">
-              <div class="action-icon" style="background: #fff7e6; color: #faad14;">
-                <i class="el-icon-folder-add" />
-              </div>
-              <div class="action-info">
-                <div class="action-name">新建题库</div>
-                <div class="action-desc">创建分类题库</div>
-              </div>
-              <i class="el-icon-arrow-right action-arrow" />
-            </div>
-            <div class="action-item" @click="$router.push({ name: 'SysUser' })">
-              <div class="action-icon" style="background: #f0f5ff; color: #722ed1;">
-                <i class="el-icon-user" />
-              </div>
-              <div class="action-info">
-                <div class="action-name">用户管理</div>
-                <div class="action-desc">管理账号与权限</div>
-              </div>
-              <i class="el-icon-arrow-right action-arrow" />
-            </div>
-          </div>
-
-          <div class="tips-box">
-            <div class="tips-title">
-              <i class="el-icon-guide" /> 使用提示
-            </div>
-            <div class="tips-list">
-              <div>1. 先在「题库管理」中创建题库</div>
-              <div>2. 在「试题管理」中添加试题</div>
-              <div>3. 在「后台管理」中创建考试并关联题库</div>
-              <div>4. 学员即可在「我的考试」中参加考试</div>
-            </div>
-          </div>
-
-          <div style="text-align:center; color:#bbb; font-size:12px; margin-top:16px;">
-            版本 {{ version }}
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
   </div>
 </template>
 
@@ -178,7 +287,6 @@ export default {
   data() {
     return {
       version: config.version,
-      importTab: 'repo',
       stats: {
         examCount: 0,
         repoCount: 0,
@@ -188,40 +296,37 @@ export default {
     }
   },
   computed: {
-    statCards() {
+    isAdmin() {
+      const user = this.$store.state.user || {}
+      const roles = user.roles || []
+      return roles.includes('sa')
+    },
+    isTeacher() {
+      const user = this.$store.state.user || {}
+      const roles = user.roles || []
+      return !roles.includes('sa') && roles.includes('teacher')
+    },
+    adminCards() {
       return [
-        {
-          key: 'exam',
-          title: '考试总数',
-          value: this.stats.examCount,
-          icon: 'el-icon-document',
-          color: '#13c2c2',
-          desc: '已创建的考试'
-        },
-        {
-          key: 'repo',
-          title: '题库总数',
-          value: this.stats.repoCount,
-          icon: 'el-icon-collection',
-          color: '#1890ff',
-          desc: '已创建的题库'
-        },
-        {
-          key: 'user',
-          title: '用户总数',
-          value: this.stats.userCount,
-          icon: 'el-icon-user',
-          color: '#52c41a',
-          desc: '系统注册用户'
-        },
-        {
-          key: 'paper',
-          title: '考试记录',
-          value: this.stats.paperCount,
-          icon: 'el-icon-data-line',
-          color: '#faad14',
-          desc: '已提交的试卷'
-        }
+        { key: 'exam', title: '考试总数', value: this.stats.examCount, icon: 'el-icon-document', color: '#13c2c2' },
+        { key: 'repo', title: '题库总数', value: this.stats.repoCount, icon: 'el-icon-collection', color: '#1890ff' },
+        { key: 'user', title: '用户总数', value: this.stats.userCount, icon: 'el-icon-user', color: '#52c41a' },
+        { key: 'paper', title: '考试记录', value: this.stats.paperCount, icon: 'el-icon-data-line', color: '#faad14' }
+      ]
+    },
+    teacherCards() {
+      return [
+        { key: 'repo', title: '我的题库', value: this.stats.repoCount, icon: 'el-icon-collection', color: '#1890ff' },
+        { key: 'exam', title: '我的考试', value: this.stats.examCount, icon: 'el-icon-document', color: '#13c2c2' },
+        { key: 'paper', title: '考试记录', value: this.stats.paperCount, icon: 'el-icon-data-line', color: '#faad14' },
+        { key: 'userExam', title: '考生人次', value: this.stats.userExamCount, icon: 'el-icon-user', color: '#52c41a' }
+      ]
+    },
+    studentCards() {
+      return [
+        { key: 'exam', title: '可考试卷', value: this.stats.examCount, icon: 'el-icon-document', color: '#13c2c2' },
+        { key: 'myExam', title: '我的考试', value: this.stats.myExamCount, icon: 'el-icon-data-line', color: '#1890ff' },
+        { key: 'passed', title: '已通过', value: this.stats.passedCount, icon: 'el-icon-circle-check', color: '#52c41a' }
       ]
     }
   },
@@ -229,6 +334,9 @@ export default {
     this.loadStats()
   },
   methods: {
+    go(path) {
+      this.$router.push(path)
+    },
     async loadStats() {
       try {
         const res = await post('/exam/api/sys/dashboard/stats', {})
@@ -239,16 +347,14 @@ export default {
         console.log('统计数据加载失败，使用默认值')
       }
     },
-
     downloadQuTemplate() {
       download('/exam/api/qu/qu/import/template', {}, '试题导入模板.xlsx')
     },
-
     async uploadQu(file) {
       try {
         const res = await upload('/exam/api/qu/qu/import', file.file)
         if (res.code === 0) {
-          this.$message.success('试题导入成功！')
+          this.$message.success('试题导入成功')
           this.loadStats()
         } else {
           this.$message.error(res.msg || '导入失败')
@@ -257,16 +363,14 @@ export default {
         this.$message.error('导入失败，请检查文件格式')
       }
     },
-
     downloadUserTemplate() {
-      download('/exam/api/sys/user/import/template', {}, '学员导入模板.xlsx')
+      download('/exam/api/sys/user/import/template', {}, '用户导入模板.xlsx')
     },
-
     async uploadUser(file) {
       try {
         const res = await upload('/exam/api/sys/user/import', file.file)
         if (res.code === 0) {
-          this.$message.success(res.data || '学员导入成功！')
+          this.$message.success(res.data || '用户导入成功')
           this.loadStats()
         } else {
           this.$message.error(res.msg || '导入失败')

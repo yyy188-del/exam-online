@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
 * <p>
@@ -39,6 +41,9 @@ public class SysUserDTO implements Serializable {
 
     @ApiModelProperty(value = "角色列表", required=true)
     private String roleIds;
+
+    @ApiModelProperty(value = "角色ID列表", required=false)
+    private List<String> roles;
 
     @ApiModelProperty(value = "部门ID", required=true)
     private String departId;

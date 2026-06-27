@@ -16,6 +16,7 @@ import com.yy.exam.core.utils.passwd.PassHandler;
 import com.yy.exam.core.utils.passwd.PassInfo;
 import com.yy.exam.ability.shiro.jwt.JwtUtils;
 import com.yy.exam.modules.sys.user.dto.SysUserDTO;
+import com.yy.exam.modules.sys.user.dto.SysUserImportDTO;
 import com.yy.exam.modules.sys.user.dto.request.SysUserSaveReqDTO;
 import com.yy.exam.modules.sys.user.dto.response.SysUserLoginDTO;
 import com.yy.exam.modules.sys.user.entity.SysUser;
@@ -227,6 +228,102 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         return this.reg(reqDTO);
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void importExcel(List<SysUserImportDTO> list) {
+
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException(1, "导入数据为空！");
+        }
+
+        // 判断当前用户角色，非超管只能导入学生
+        boolean isAdmin = UserUtils.isAdmin(false);
+        List<String> allowedRoles = new ArrayList<>();
+        allowedRoles.add("student");
+        if (isAdmin) {
+            allowedRoles.add("teacher");
+            allowedRoles.add("sa");
+        }
+
+        int success = 0;
+        int fail = 0;
+        StringBuffer errors = new StringBuffer();
+
+        for (SysUserImportDTO item : list) {
+            try {
+                // 校验必填字段
+                if (StringUtils.isBlank(item.getUserName())) {
+                    fail++;
+                    continue;
+                }
+                if (StringUtils.isBlank(item.getRealName())) {
+                    fail++;
+                    continue;
+                }
+                if (StringUtils.isBlank(item.getPassword())) {
+                    fail++;
+                    continue;
+                }
+
+                // 校验角色
+                String role = item.getRole();
+                if (StringUtils.isBlank(role)) {
+                    role = "student";
+                }
+                if (!allowedRoles.contains(role)) {
+                    errors.append("用户" + item.getUserName() + "的角色不允许导入，已跳过<br>");
+                    fail++;
+                    continue;
+                }
+
+                // 检查用户名是否已存在
+                QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
+                wrapper.lambda().eq(SysUser::getUserName, item.getUserName());
+                int count = this.count(wrapper);
+                if (count > 0) {
+                    errors.append("用户" + item.getUserName() + "已存在，已跳过<br>");
+                    fail++;
+                    continue;
+                }
+
+                // 保存用户
+                SysUser user = new SysUser();
+                user.setId(IdWorker.getIdStr());
+                user.setUserName(item.getUserName());
+                user.setRealName(item.getRealName());
+                PassInfo passInfo = PassHandler.buildPassword(item.getPassword());
+                user.setPassword(passInfo.getPassword());
+                user.setSalt(passInfo.getSalt());
+
+                // 保存角色
+                List<String> roles = new ArrayList<>();
+                roles.add(role);
+                String roleIds = sysUserRoleService.saveRoles(user.getId(), roles);
+                user.setRoleIds(roleIds);
+                this.save(user);
+
+                success++;
+            } catch (Exception e) {
+                fail++;
+                errors.append("导入" + item.getUserName() + "失败：" + e.getMessage() + "<br>");
+            }
+        }
+
+        String msg = "成功导入" + success + "条";
+        if (fail > 0) {
+            msg += "，跳过" + fail + "条";
+            if (errors.length() > 0) {
+                msg += "。" + errors.toString();
+            }
+        }
+
+        // 有错误信息时提示
+        if (fail > 0 && errors.length() > 0) {
+            throw new ServiceException(1, msg);
+        }
     }
 
 

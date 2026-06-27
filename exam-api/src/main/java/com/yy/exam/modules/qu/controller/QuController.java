@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -61,8 +62,7 @@ public class QuController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "添加或修改")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "添加或修改")
     @RequestMapping(value = "/save", method = {RequestMethod.POST})
     public ApiRest<BaseIdRespDTO> save(@RequestBody QuDetailDTO reqDTO) {
         baseService.save(reqDTO);
@@ -75,8 +75,7 @@ public class QuController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "批量删除")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "批量删除")
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
     public ApiRest edit(@RequestBody BaseIdsReqDTO reqDTO) {
         //根据ID删除
@@ -90,6 +89,7 @@ public class QuController extends BaseController {
      * @param reqDTO
      * @return
      */
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
     @ApiOperation(value = "查找详情")
     @RequestMapping(value = "/detail", method = {RequestMethod.POST})
     public ApiRest<QuDetailDTO> detail(@RequestBody BaseIdReqDTO reqDTO) {
@@ -103,8 +103,7 @@ public class QuController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "分页查找")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "分页查找")
     @RequestMapping(value = "/paging", method = {RequestMethod.POST})
     public ApiRest<IPage<QuDTO>> paging(@RequestBody PagingReqDTO<QuQueryReqDTO> reqDTO) {
 
@@ -118,8 +117,7 @@ public class QuController extends BaseController {
     /**
      * 导出excel文件
      */
-    @RequiresRoles("sa")
-    @ResponseBody
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ResponseBody
     @RequestMapping(value = "/export")
     public ApiRest exportFile(HttpServletResponse response, @RequestBody QuQueryReqDTO reqDTO) {
 
@@ -159,8 +157,7 @@ public class QuController extends BaseController {
      * @param file
      * @return
      */
-    @RequiresRoles("sa")
-    @ResponseBody
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ResponseBody
     @RequestMapping(value = "/import")
     public ApiRest importFile(@RequestParam("file") MultipartFile file) {
 
@@ -266,6 +263,7 @@ public class QuController extends BaseController {
     /**
      * 下载导入试题数据模板
      */
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
     @ResponseBody
     @RequestMapping(value = "import/template")
     public ApiRest importFileTemplate(HttpServletResponse response) {

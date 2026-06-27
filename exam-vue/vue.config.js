@@ -26,6 +26,16 @@ module.exports = {
   devServer: {
     port: port,
     open: true,
+    proxy: {
+      '/exam/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/upload/file': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      }
+    },
     overlay: {
       warnings: false,
       errors: true

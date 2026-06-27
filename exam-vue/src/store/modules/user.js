@@ -1,4 +1,4 @@
-import { login, reg, logout, getInfo } from '@/api/user'
+﻿import { login, reg, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -53,9 +53,9 @@ const actions = {
   },
 
   reg({ commit }, userInfo) {
-    const { userName, realName, password } = userInfo
+    const { userName, realName, password, role } = userInfo
     return new Promise((resolve, reject) => {
-      reg({ userName: userName.trim(), realName: realName.trim(), password: password }).then(response => {
+      reg({ userName: userName.trim(), realName: realName.trim(), password: password, roles: [role] }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)

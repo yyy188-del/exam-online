@@ -1,0 +1,26 @@
+﻿# Maven
+exam-api/target/
+
+# Node
+exam-vue/node_modules/
+exam-vue/dist/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+exam-api/logs/
+
+# Upload
+exam-api/src/main/resources/static/
+upload/
+
+# Build
+*.class
+*.jar
+*.war

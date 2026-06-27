@@ -43,6 +43,7 @@ import com.yy.exam.modules.qu.service.QuAnswerService;
 import com.yy.exam.modules.qu.service.QuService;
 import com.yy.exam.modules.sys.user.entity.SysUser;
 import com.yy.exam.modules.sys.user.service.SysUserService;
+import com.yy.exam.modules.user.UserUtils;
 import com.yy.exam.modules.user.book.service.UserBookService;
 import com.yy.exam.modules.user.exam.service.UserExamService;
 import org.apache.commons.lang3.StringUtils;
@@ -158,6 +159,8 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
     @Override
     public ExamDetailRespDTO paperDetail(String paperId) {
 
+        // 校验试卷所有权
+        checkPaperOwner(paperId);
 
         ExamDetailRespDTO respDTO = new ExamDetailRespDTO();
 
@@ -191,6 +194,9 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
 
     @Override
     public ExamResultRespDTO paperResult(String paperId) {
+
+        // 校验试卷所有权
+        checkPaperOwner(paperId);
 
         ExamResultRespDTO respDTO = new ExamResultRespDTO();
 
@@ -415,6 +421,8 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
     @Override
     public void fillAnswer(PaperAnswerDTO reqDTO) {
 
+        // 校验试卷所有权
+        checkPaperOwner(reqDTO.getPaperId());
 
         // 未作答
         if(CollectionUtils.isEmpty(reqDTO.getAnswers())
@@ -459,6 +467,9 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void handExam(String paperId) {
+
+        // 校验试卷所有权
+        checkPaperOwner(paperId);
 
         //获取试卷信息
         Paper paper = paperService.getById(paperId);
@@ -538,5 +549,16 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
         }
 
         return null;
+    }
+
+    /**
+     * 校验试卷所有权
+     * @param paperId
+     */
+    private void checkPaperOwner(String paperId) {
+        Paper paper = paperService.getById(paperId);
+        if (paper == null || !paper.getUserId().equals(UserUtils.getUserId())) {
+            throw new ServiceException(1, "无权操作此试卷！");
+        }
     }
 }

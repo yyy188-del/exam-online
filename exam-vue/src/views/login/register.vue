@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
 
     <div class="title-box">
@@ -23,6 +23,13 @@
           placeholder="姓名"
           prefix-icon="el-icon-user"
         />
+      </el-form-item>
+
+      <el-form-item prop="role">
+        <el-radio-group v-model="postForm.role" style="width: 100%">
+          <el-radio-button label="student">学生</el-radio-button>
+          <el-radio-button label="teacher">教师</el-radio-button>
+        </el-radio-group>
       </el-form-item>
 
       <el-form-item prop="password">
@@ -57,8 +64,10 @@ export default {
   data() {
     return {
       postForm: {
-        mobile: '',
-        password: ''
+        userName: '',
+        realName: '',
+        password: '',
+        role: 'student'
       },
       loginRules: {
         password: [{ required: true, trigger: 'blur', message: '登录密码不能为空！' }],
@@ -96,4 +105,3 @@ export default {
   }
 }
 </script>
-

@@ -5,6 +5,7 @@ import com.yy.exam.core.api.ApiRest;
 import com.yy.exam.core.api.controller.BaseController;
 import com.yy.exam.core.api.dto.BaseIdReqDTO;
 import com.yy.exam.core.api.dto.BaseIdsReqDTO;
+import org.apache.shiro.authz.annotation.Logical;
 import com.yy.exam.core.api.dto.BaseStateReqDTO;
 import com.yy.exam.core.api.dto.PagingReqDTO;
 import com.yy.exam.modules.notice.dto.NoticeDTO;
@@ -12,6 +13,7 @@ import com.yy.exam.modules.notice.entity.Notice;
 import com.yy.exam.modules.notice.service.NoticeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,16 +31,14 @@ public class NoticeController extends BaseController {
     @Autowired
     private NoticeService baseService;
 
-    @RequiresRoles("sa")
-    @ApiOperation(value = "添加或修改")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "添加或修改")
     @RequestMapping(value = "/save", method = { RequestMethod.POST})
     public ApiRest save(@RequestBody NoticeDTO reqDTO) {
         baseService.save(reqDTO);
         return super.success();
     }
 
-    @RequiresRoles("sa")
-    @ApiOperation(value = "批量删除")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "批量删除")
     @RequestMapping(value = "/delete", method = { RequestMethod.POST})
     public ApiRest delete(@RequestBody BaseIdsReqDTO reqDTO) {
         baseService.removeByIds(reqDTO.getIds());
@@ -54,8 +54,7 @@ public class NoticeController extends BaseController {
         return super.success(dto);
     }
 
-    @RequiresRoles("sa")
-    @ApiOperation(value = "修改状态")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "修改状态")
     @RequestMapping(value = "/state", method = { RequestMethod.POST})
     public ApiRest state(@RequestBody BaseStateReqDTO reqDTO) {
         for (String id : reqDTO.getIds()) {

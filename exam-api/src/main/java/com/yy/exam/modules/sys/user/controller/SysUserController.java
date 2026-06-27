@@ -2,12 +2,16 @@ package com.yy.exam.modules.sys.user.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.common.collect.Lists;
 import com.yy.exam.core.api.ApiRest;
 import com.yy.exam.core.api.controller.BaseController;
 import com.yy.exam.core.api.dto.BaseIdsReqDTO;
 import com.yy.exam.core.api.dto.BaseStateReqDTO;
 import com.yy.exam.core.api.dto.PagingReqDTO;
+import com.yy.exam.core.utils.excel.ExportExcel;
+import com.yy.exam.core.utils.excel.ImportExcel;
 import com.yy.exam.modules.sys.user.dto.SysUserDTO;
+import com.yy.exam.modules.sys.user.dto.SysUserImportDTO;
 import com.yy.exam.modules.sys.user.dto.request.SysUserLoginReqDTO;
 import com.yy.exam.modules.sys.user.dto.request.SysUserSaveReqDTO;
 import com.yy.exam.modules.sys.user.dto.response.SysUserLoginDTO;
@@ -15,6 +19,7 @@ import com.yy.exam.modules.sys.user.entity.SysUser;
 import com.yy.exam.modules.sys.user.service.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,9 +27,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * <p>
@@ -178,5 +187,56 @@ public class SysUserController extends BaseController {
     public ApiRest<SysUserLoginDTO> quick(@RequestBody SysUserDTO reqDTO) {
         SysUserLoginDTO respDTO = baseService.quickReg(reqDTO);
         return success(respDTO);
+    }
+
+    /**
+     * 下载导入用户数据模板
+     */
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
+    @ResponseBody
+    @RequestMapping(value = "import/template")
+    public ApiRest importFileTemplate(HttpServletResponse response) {
+        try {
+            String fileName = "用户导入模板.xlsx";
+            List<SysUserImportDTO> list = Lists.newArrayList();
+
+            SysUserImportDTO example = new SysUserImportDTO();
+            example.setUserName("zhangsan");
+            example.setRealName("张三");
+            example.setPassword("123456");
+            example.setRole("student");
+
+            list.add(example);
+
+            new ExportExcel("用户数据", SysUserImportDTO.class, 2).setDataList(list).write(response, fileName).dispose();
+            return super.success();
+        } catch (Exception e) {
+            return super.failure("导入模板下载失败！失败信息：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 导入用户Excel
+     * @param file
+     * @return
+     */
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
+    @ResponseBody
+    @RequestMapping(value = "/import")
+    public ApiRest importFile(@RequestParam("file") MultipartFile file) {
+
+        try {
+            ImportExcel ei = new ImportExcel(file, 1, 0);
+            List<SysUserImportDTO> list = ei.getDataList(SysUserImportDTO.class);
+
+            // 导入数据
+            baseService.importExcel(list);
+
+            // 导入成功
+            return super.success();
+
+        } catch (Exception e) {
+            return super.failure(e.getMessage());
+        }
     }
 }

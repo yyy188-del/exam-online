@@ -17,9 +17,9 @@ import java.util.Date;
 public class JwtUtils {
 
 	/**
-	 * 有效期24小时
+	 * 有效期7天
 	 */
-	private static final long EXPIRE_TIME = 24 * 60 * 60 * 1000;
+	private static final long EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000;
 
 
 	/**

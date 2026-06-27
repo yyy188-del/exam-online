@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yy.exam.core.api.ApiRest;
 import com.yy.exam.core.api.controller.BaseController;
 import com.yy.exam.core.api.dto.BaseIdReqDTO;
+import org.apache.shiro.authz.annotation.Logical;
 import com.yy.exam.core.api.dto.BaseIdsReqDTO;
 import com.yy.exam.core.api.dto.BaseStateReqDTO;
 import com.yy.exam.core.api.dto.PagingReqDTO;
@@ -16,6 +17,7 @@ import com.yy.exam.modules.exam.entity.Exam;
 import com.yy.exam.modules.exam.service.ExamService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,8 +48,7 @@ public class ExamController extends BaseController {
     * @param reqDTO
     * @return
     */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "添加或修改")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "添加或修改")
     @RequestMapping(value = "/save", method = { RequestMethod.POST})
     public ApiRest save(@RequestBody ExamSaveReqDTO reqDTO) {
         //复制参数
@@ -60,8 +61,7 @@ public class ExamController extends BaseController {
     * @param reqDTO
     * @return
     */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "批量删除")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "批量删除")
     @RequestMapping(value = "/delete", method = { RequestMethod.POST})
     public ApiRest edit(@RequestBody BaseIdsReqDTO reqDTO) {
         //根据ID删除
@@ -86,8 +86,7 @@ public class ExamController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "查找详情")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "查找详情")
     @RequestMapping(value = "/state", method = { RequestMethod.POST})
     public ApiRest state(@RequestBody BaseStateReqDTO reqDTO) {
 
@@ -121,8 +120,7 @@ public class ExamController extends BaseController {
     * @param reqDTO
     * @return
     */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "分页查找")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "分页查找")
     @RequestMapping(value = "/paging", method = { RequestMethod.POST})
     public ApiRest<IPage<ExamDTO>> paging(@RequestBody PagingReqDTO<ExamDTO> reqDTO) {
 
@@ -138,8 +136,7 @@ public class ExamController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
-    @ApiOperation(value = "待阅试卷")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)    @ApiOperation(value = "待阅试卷")
     @RequestMapping(value = "/review-paging", method = { RequestMethod.POST})
     public ApiRest<IPage<ExamReviewRespDTO>> reviewPaging(@RequestBody PagingReqDTO<ExamDTO> reqDTO) {
         //分页查询并转换

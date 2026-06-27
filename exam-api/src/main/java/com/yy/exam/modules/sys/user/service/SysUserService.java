@@ -3,10 +3,13 @@ package com.yy.exam.modules.sys.user.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yy.exam.modules.sys.user.dto.SysUserDTO;
+import com.yy.exam.modules.sys.user.dto.SysUserImportDTO;
 import com.yy.exam.modules.sys.user.dto.request.SysUserSaveReqDTO;
 import com.yy.exam.modules.sys.user.dto.response.SysUserLoginDTO;
 import com.yy.exam.modules.sys.user.entity.SysUser;
 import com.yy.exam.core.api.dto.PagingReqDTO;
+
+import java.util.List;
 
 /**
 * <p>
@@ -69,4 +72,10 @@ public interface SysUserService extends IService<SysUser> {
      * @param reqDTO
      */
     SysUserLoginDTO quickReg(SysUserDTO reqDTO);
+
+    /**
+     * 批量导入用户
+     * @param list
+     */
+    void importExcel(List<SysUserImportDTO> list);
 }

@@ -102,7 +102,7 @@ public class SysUserController extends BaseController {
      * 保存或修改系统用户
      * @return
      */
-    @RequiresRoles("sa")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
     @ApiOperation(value = "保存或修改")
     @RequestMapping(value = "/save", method = {RequestMethod.POST})
     public ApiRest save(@RequestBody SysUserSaveReqDTO reqDTO) {
@@ -116,7 +116,7 @@ public class SysUserController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
     @ApiOperation(value = "批量删除")
     @RequestMapping(value = "/delete", method = { RequestMethod.POST})
     public ApiRest edit(@RequestBody BaseIdsReqDTO reqDTO) {
@@ -130,7 +130,7 @@ public class SysUserController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
     @ApiOperation(value = "分页查找")
     @RequestMapping(value = "/paging", method = { RequestMethod.POST})
     public ApiRest<IPage<SysUserDTO>> paging(@RequestBody PagingReqDTO<SysUserDTO> reqDTO) {
@@ -145,7 +145,7 @@ public class SysUserController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles("sa")
+    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
     @ApiOperation(value = "修改状态")
     @RequestMapping(value = "/state", method = { RequestMethod.POST})
     public ApiRest state(@RequestBody BaseStateReqDTO reqDTO) {

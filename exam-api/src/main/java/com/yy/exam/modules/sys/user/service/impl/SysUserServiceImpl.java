@@ -68,6 +68,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
         }
 
+        // 教师只能看到学生
+        if (!UserUtils.isAdmin(false)) {
+            wrapper.lambda().like(SysUser::getRoleIds, "student");
+        }
+
         //获得数据
         IPage<SysUser> page = this.page(query, wrapper);
         //转换结果
@@ -157,6 +162,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         if(CollectionUtils.isEmpty(roles)){
             throw new ServiceException(ApiError.ERROR_90010003);
+        }
+
+        // 教师只能创建学生
+        if (!UserUtils.isAdmin(false)) {
+            roles = new ArrayList<>();
+            roles.add("student");
         }
 
         // 保存基本信息

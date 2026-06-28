@@ -53,4 +53,21 @@ public class UserUtils {
     public static String getUserId(){
         return getUserId(true);
     }
+
+    /**
+     * 判断当前用户是否是教师
+     * @param throwable
+     * @return
+     */
+    public static boolean isTeacher(boolean throwable){
+        try {
+            SysUserLoginDTO dto = ((SysUserLoginDTO) SecurityUtils.getSubject().getPrincipal());
+            return dto.getRoles().contains("teacher");
+        }catch (Exception e){
+            if(throwable){
+                throw new ServiceException(ApiError.ERROR_10010002);
+            }
+        }
+        return false;
+    }
 }

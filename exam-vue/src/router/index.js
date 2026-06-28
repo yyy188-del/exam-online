@@ -1,4 +1,4 @@
-import Vue from 'vue'
+﻿import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
@@ -258,6 +258,12 @@ export const asyncRoutes = [
         name: 'ListPaper',
         meta: { title: '考试记录', noCache: true, activeMenu: '/exam/exam' },
         hidden: true
+      },
+      {
+        path: 'student',
+        component: () => import('@/views/exam/student'),
+        name: 'StudentList',
+        meta: { title: '学生管理', noCache: true, icon: 'admin' }
       }
     ]
   },

@@ -14,8 +14,6 @@ import com.yy.exam.modules.exam.entity.Exam;
 * 考试业务类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-07-25 16:18
 */
 public interface ExamService extends IService<Exam> {
 

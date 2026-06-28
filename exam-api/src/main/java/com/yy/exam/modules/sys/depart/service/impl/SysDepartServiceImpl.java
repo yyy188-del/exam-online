@@ -25,8 +25,6 @@ import java.util.Map;
 * 部门信息业务实现类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-09-02 17:25
 */
 @Service
 public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart> implements SysDepartService {

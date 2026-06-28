@@ -14,8 +14,6 @@ import java.util.List;
 * 管理用户请求类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-04-13 16:57
 */
 @Data
 @ApiModel(value="管理用户", description="管理用户")

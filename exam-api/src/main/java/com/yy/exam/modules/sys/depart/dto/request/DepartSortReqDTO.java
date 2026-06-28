@@ -11,8 +11,6 @@ import java.io.Serializable;
 * 部门排序请求类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-03-14 10:37
 */
 @Data
 @ApiModel(value="部门排序请求类", description="部门排序请求类")

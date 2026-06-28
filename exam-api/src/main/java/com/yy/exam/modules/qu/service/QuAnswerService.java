@@ -13,8 +13,6 @@ import java.util.List;
 * 候选答案业务类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-05-25 13:23
 */
 public interface QuAnswerService extends IService<QuAnswer> {
 

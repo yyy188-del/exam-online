@@ -14,8 +14,6 @@ import java.util.Date;
 * 管理用户实体类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-04-13 16:57
 */
 @Data
 @TableName("sys_user")

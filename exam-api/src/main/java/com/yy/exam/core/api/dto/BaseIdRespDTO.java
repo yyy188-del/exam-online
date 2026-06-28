@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
  * 主键通用响应类，用于添加后返回内容
  * </p>
  *
- * @author 聪明笨狗
- * @since 2019-04-20 12:15
  */
 @Data
 @ApiModel(value="主键通用响应类", description="主键通用响应类")

@@ -40,8 +40,6 @@ import java.util.Map;
  * 语言设置 服务实现类
  * </p>
  *
- * @author 聪明笨狗
- * @since 2020-05-25 10:17
  */
 @Service
 public class QuServiceImpl extends ServiceImpl<QuMapper, Qu> implements QuService {

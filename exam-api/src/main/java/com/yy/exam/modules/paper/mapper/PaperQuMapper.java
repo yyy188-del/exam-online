@@ -12,8 +12,6 @@ import java.util.List;
 * 试卷考题Mapper
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-05-25 16:33
 */
 public interface PaperQuMapper extends BaseMapper<PaperQu> {
 

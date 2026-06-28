@@ -14,8 +14,6 @@ import java.util.List;
 * 试卷考题业务类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-05-25 16:33
 */
 public interface PaperQuService extends IService<PaperQu> {
 

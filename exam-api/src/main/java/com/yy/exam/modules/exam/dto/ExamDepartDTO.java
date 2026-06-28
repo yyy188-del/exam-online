@@ -11,8 +11,6 @@ import java.io.Serializable;
 * 考试部门数据传输类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-09-03 17:24
 */
 @Data
 @ApiModel(value="考试部门", description="考试部门")

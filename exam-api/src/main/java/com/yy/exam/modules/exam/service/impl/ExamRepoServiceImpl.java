@@ -20,8 +20,6 @@ import java.util.List;
 * 考试题库业务实现类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-09-05 11:14
 */
 @Service
 public class ExamRepoServiceImpl extends ServiceImpl<ExamRepoMapper, ExamRepo> implements ExamRepoService {

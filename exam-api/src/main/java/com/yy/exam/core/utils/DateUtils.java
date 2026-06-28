@@ -21,8 +21,7 @@ public class DateUtils {
 	 * @author Bool
 	 * @param userCreateTime
 	 * @return
-	 * @since JDK 1.6
-	 */
+		 */
 	public static int calcExpDays(Date userCreateTime){
 		
 		Calendar start = Calendar.getInstance();

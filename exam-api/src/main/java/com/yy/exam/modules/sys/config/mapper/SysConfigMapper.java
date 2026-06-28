@@ -8,8 +8,6 @@ import com.yy.exam.modules.sys.config.entity.SysConfig;
 * 通用配置Mapper
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-04-17 09:12
 */
 public interface SysConfigMapper extends BaseMapper<SysConfig> {
 

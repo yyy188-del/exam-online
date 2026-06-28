@@ -12,8 +12,6 @@ import lombok.Data;
 * 角色实体类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-04-13 16:57
 */
 @Data
 @TableName("sys_role")

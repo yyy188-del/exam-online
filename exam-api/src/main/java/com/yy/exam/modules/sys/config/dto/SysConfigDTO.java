@@ -11,8 +11,6 @@ import java.io.Serializable;
 * 通用配置请求类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-04-17 09:12
 */
 @Data
 @ApiModel(value="通用配置", description="通用配置")

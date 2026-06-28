@@ -11,8 +11,6 @@ import java.io.Serializable;
 * 候选答案请求类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-05-25 13:23
 */
 @Data
 @ApiModel(value="候选答案", description="候选答案")

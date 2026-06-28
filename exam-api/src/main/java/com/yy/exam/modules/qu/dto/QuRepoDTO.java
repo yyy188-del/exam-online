@@ -11,8 +11,6 @@ import java.io.Serializable;
 * 试题题库请求类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-05-25 13:23
 */
 @Data
 @ApiModel(value="试题题库", description="试题题库")

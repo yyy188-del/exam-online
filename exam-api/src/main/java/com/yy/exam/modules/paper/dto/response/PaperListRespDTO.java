@@ -10,8 +10,6 @@ import lombok.Data;
 * 试卷请求类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-05-25 17:31
 */
 @Data
 @ApiModel(value="试卷列表响应类", description="试卷列表响应类")

@@ -11,8 +11,6 @@ import com.yy.exam.core.api.dto.PagingReqDTO;
 * 角色业务类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-04-13 16:57
 */
 public interface SysRoleService extends IService<SysRole> {
 

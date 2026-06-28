@@ -7,7 +7,7 @@ import java.util.Date;
 
 /**
  * 考试成绩导出DTO
- * @author 你的名字
+ * @author yy
  */
 @Data
 public class ExamScoreExportDTO {

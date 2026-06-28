@@ -14,8 +14,6 @@ import java.util.List;
 * 部门信息业务类
 * </p>
 *
-* @author 聪明笨狗
-* @since 2020-09-02 17:25
 */
 public interface SysDepartService extends IService<SysDepart> {
 

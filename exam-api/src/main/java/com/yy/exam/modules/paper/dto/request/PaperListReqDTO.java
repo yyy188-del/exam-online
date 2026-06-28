@@ -21,9 +21,6 @@ public class PaperListReqDTO implements Serializable {
     @ApiModelProperty(value = "用户ID", required=true)
     private String userId;
 
-    @ApiModelProperty(value = "部门ID", required=true)
-    private String departId;
-
     @ApiModelProperty(value = "规则ID", required=true)
     private String examId;
 
@@ -32,6 +29,15 @@ public class PaperListReqDTO implements Serializable {
 
     @ApiModelProperty(value = "试卷状态", required=true)
     private Integer state;
+
+    @ApiModelProperty(value = "仅看不及格:1")
+    private Integer passFilter;
+
+    @ApiModelProperty(value = "排序字段")
+    private String sortField;
+
+    @ApiModelProperty(value = "排序方式")
+    private String sortOrder;
 
     
 }

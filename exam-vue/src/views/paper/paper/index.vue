@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 
   <div>
 
@@ -130,25 +130,10 @@
         </el-table-column>
 
         <el-table-column
-          label="视频截图"
-          align="center"
-        >
-
-          <template v-slot="scope">
-            <el-button type="primary" size="small" @click="handleCapture(scope.row.id)">考试截图</el-button>
-          </template>
-
-        </el-table-column>
 
       </template>
 
     </data-table>
-
-    <el-dialog :visible.sync="dialogVisible" title="考试截图" width="500px">
-
-      <img v-for="item in captureList" :key="item.capture" :src="item.capture" style="width: 230px">
-
-    </el-dialog>
 
     <el-dialog :visible.sync="statsVisible" title="成绩分析" width="700px" :close-on-click-modal="false">
 
@@ -240,7 +225,7 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import { paperStats, listCaptures } from '@/api/paper/paper'
+import { paperStats } from '@/api/paper/paper'
 import ExamSelect from '@/components/ExamSelect'
 
 export default {
@@ -253,7 +238,6 @@ export default {
       statsVisible: false,
       statsData: null,
       sortLabel: '',
-      captureList: [],
 
       paperStates: [
         { value: 0, label: '考试中' },
@@ -301,13 +285,6 @@ export default {
     }
   },
   methods: {
-
-    handleCapture(paperId) {
-      this.dialogVisible = true
-      listCaptures(paperId).then(res => {
-        this.captureList = res.data
-      })
-    },
 
     togglePassFilter() {
       if (this.listQuery.params.passFilter === 1) {

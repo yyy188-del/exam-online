@@ -2,11 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yy.exam.modules.paper.mapper.PaperMapper">
 
-    <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.yy.exam.modules.paper.entity.Paper">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
-        <result column="depart_id" property="departId" />
         <result column="exam_id" property="examId" />
         <result column="title" property="title" />
         <result column="total_time" property="totalTime" />
@@ -23,11 +21,9 @@
         <result column="limit_time" property="limitTime" />
     </resultMap>
 
-    <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        `id`,`user_id`,`depart_id`,`exam_id`,`title`,`total_time`,`user_time`,`total_score`,`qualify_score`,`obj_score`,`subj_score`,`user_score`,`has_saq`,`state`,`create_time`,`update_time`,`limit_time`
+        `id`,`user_id`,`exam_id`,`title`,`total_time`,`user_time`,`total_score`,`qualify_score`,`obj_score`,`subj_score`,`user_score`,`has_saq`,`state`,`create_time`,`update_time`,`limit_time`
     </sql>
-
 
     <resultMap id="ListResultMap"
                extends="BaseResultMap"
@@ -43,12 +39,8 @@
                 <if test="query.examId!=null and query.examId!=''">
                     AND pp.exam_id=#{query.examId}
                 </if>
-
                 <if test="query.userId!=null and query.userId!=''">
                     AND pp.user_id=#{query.userId}
-                </if>
-                <if test="query.departId!=null and query.departId!=''">
-                    AND pp.depart_id=#{query.departId}
                 </if>
                 <if test="query.state!=null">
                     AND pp.state=#{query.state}
@@ -56,10 +48,24 @@
                 <if test="query.realName!=null and query.realName!=''">
                     AND uc.real_name  LIKE CONCAT('%',#{query.realName},'%')
                 </if>
+                <if test="query.passFilter!=null and query.passFilter == 1">
+                    AND pp.state = 2
+                    AND pp.user_score &lt; pp.qualify_score
+                </if>
             </if>
         </where>
 
-        ORDER BY create_time DESC
+        <choose>
+            <when test="query!=null and query.sortField=='userScore' and query.sortOrder=='ASC'">
+                ORDER BY pp.user_score ASC
+            </when>
+            <when test="query!=null and query.sortField=='userScore' and query.sortOrder=='DESC'">
+                ORDER BY pp.user_score DESC
+            </when>
+            <otherwise>
+                ORDER BY pp.create_time DESC
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

@@ -26,6 +26,7 @@ import com.yy.exam.modules.paper.dto.request.PaperListReqDTO;
 import com.yy.exam.modules.paper.dto.response.ExamDetailRespDTO;
 import com.yy.exam.modules.paper.dto.response.ExamResultRespDTO;
 import com.yy.exam.modules.paper.dto.response.PaperListRespDTO;
+import com.yy.exam.modules.paper.dto.response.PaperStatsRespDTO;
 import com.yy.exam.modules.paper.entity.Paper;
 import com.yy.exam.modules.paper.entity.PaperQu;
 import com.yy.exam.modules.paper.entity.PaperQuAnswer;
@@ -41,8 +42,6 @@ import com.yy.exam.modules.qu.entity.QuAnswer;
 import com.yy.exam.modules.qu.enums.QuType;
 import com.yy.exam.modules.qu.service.QuAnswerService;
 import com.yy.exam.modules.qu.service.QuService;
-import com.yy.exam.modules.sys.user.entity.SysUser;
-import com.yy.exam.modules.sys.user.service.SysUserService;
 import com.yy.exam.modules.user.UserUtils;
 import com.yy.exam.modules.user.book.service.UserBookService;
 import com.yy.exam.modules.user.exam.service.UserExamService;
@@ -63,9 +62,6 @@ import java.util.*;
 @Service
 public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements PaperService {
 
-
-    @Autowired
-    private SysUserService sysUserService;
 
     @Autowired
     private ExamService examService;
@@ -330,13 +326,8 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
      */
     private Paper savePaper(String userId, ExamDTO exam, List<PaperQu> quList) {
 
-
-        // 查找用户
-        SysUser user = sysUserService.getById(userId);
-
         //保存试卷基本信息
         Paper paper = new Paper();
-        paper.setDepartId(user.getDepartId());
         paper.setExamId(exam.getId());
         paper.setTitle(exam.getTitle());
         paper.setTotalScore(exam.getTotalScore());
@@ -558,5 +549,72 @@ public class PaperServiceImpl extends ServiceImpl<PaperMapper, Paper> implements
         if (paper == null || !paper.getUserId().equals(UserUtils.getUserId())) {
             throw new ServiceException(1, "无权操作此试卷！");
         }
+    }
+
+    @Override
+    public PaperStatsRespDTO stats(String examId) {
+        PaperStatsRespDTO resp = new PaperStatsRespDTO();
+
+        QueryWrapper<Paper> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(Paper::getExamId, examId);
+        List<Paper> papers = this.list(wrapper);
+
+        resp.setTotalPapers(papers.size());
+
+        int passCount = 0;
+        int failCount = 0;
+        int totalScore = 0;
+        int maxScore = 0;
+        int minScore = Integer.MAX_VALUE;
+
+        int[] distribution = new int[5];
+
+        for (Paper paper : papers) {
+            if (paper.getState() != null && paper.getState() == PaperState.FINISHED
+                    && paper.getUserScore() != null && paper.getQualifyScore() != null) {
+                int score = paper.getUserScore();
+                int qualify = paper.getQualifyScore();
+
+                totalScore += score;
+                if (score > maxScore) maxScore = score;
+                if (score < minScore) minScore = score;
+
+                if (score >= qualify) {
+                    passCount++;
+                } else {
+                    failCount++;
+                }
+
+                if (score < 60) distribution[0]++;
+                else if (score < 70) distribution[1]++;
+                else if (score < 80) distribution[2]++;
+                else if (score < 90) distribution[3]++;
+                else distribution[4]++;
+            }
+        }
+
+        resp.setPassCount(passCount);
+        resp.setFailCount(failCount);
+
+        int finishedCount = passCount + failCount;
+        if (finishedCount > 0) {
+            resp.setAvgScore((double) Math.round((float) totalScore / finishedCount * 10) / 10);
+        } else {
+            resp.setAvgScore(0.0);
+        }
+        resp.setMaxScore(maxScore);
+        resp.setMinScore(minScore == Integer.MAX_VALUE ? 0 : minScore);
+
+        List<PaperStatsRespDTO.ScoreRange> distList = new ArrayList<>();
+        String[] labels = {"0-59", "60-69", "70-79", "80-89", "90-100"};
+        for (int i = 0; i < distribution.length; i++) {
+            PaperStatsRespDTO.ScoreRange item = new PaperStatsRespDTO.ScoreRange();
+            item.setLabel(labels[i]);
+            item.setCount(distribution[i]);
+            distList.add(item);
+        }
+        resp.setDistribution(distList);
+
+        return resp;
     }
 }

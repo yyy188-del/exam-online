@@ -57,7 +57,7 @@ spring:
             threadsInheritContextClassLoaderOfInitializingThread: true
 
 server:
-  port: 8101
+  port: 8080
   # 启用服务端压缩
   compression:
     enabled: true

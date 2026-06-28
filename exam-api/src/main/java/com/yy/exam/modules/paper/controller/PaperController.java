@@ -17,6 +17,7 @@ import com.yy.exam.modules.paper.dto.request.PaperQuQueryDTO;
 import com.yy.exam.modules.paper.dto.response.ExamDetailRespDTO;
 import com.yy.exam.modules.paper.dto.response.ExamResultRespDTO;
 import com.yy.exam.modules.paper.dto.response.PaperListRespDTO;
+import com.yy.exam.modules.paper.dto.response.PaperStatsRespDTO;
 import com.yy.exam.modules.paper.entity.Paper;
 import com.yy.exam.modules.paper.service.PaperService;
 import com.yy.exam.modules.user.UserUtils;
@@ -152,5 +153,17 @@ public class PaperController extends BaseController {
         //复制参数
         PaperDTO dto = baseService.checkProcess(UserUtils.getUserId());
         return super.success(dto);
+    }
+
+    /**
+     * 成绩统计
+     * @param reqDTO
+     * @return
+     */
+    @ApiOperation(value = "成绩统计")
+    @RequestMapping(value = "/stats", method = { RequestMethod.POST})
+    public ApiRest<PaperStatsRespDTO> stats(@RequestBody BaseIdReqDTO reqDTO) {
+        PaperStatsRespDTO respDTO = baseService.stats(reqDTO.getId());
+        return super.success(respDTO);
     }
 }

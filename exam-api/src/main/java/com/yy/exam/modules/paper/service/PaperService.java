@@ -10,6 +10,7 @@ import com.yy.exam.modules.paper.dto.request.PaperListReqDTO;
 import com.yy.exam.modules.paper.dto.response.ExamDetailRespDTO;
 import com.yy.exam.modules.paper.dto.response.ExamResultRespDTO;
 import com.yy.exam.modules.paper.dto.response.PaperListRespDTO;
+import com.yy.exam.modules.paper.dto.response.PaperStatsRespDTO;
 import com.yy.exam.modules.paper.entity.Paper;
 
 /**
@@ -78,4 +79,10 @@ public interface PaperService extends IService<Paper> {
      */
     PaperDTO checkProcess(String userId);
 
+    /**
+     * 成绩统计
+     * @param examId
+     * @return
+     */
+    PaperStatsRespDTO stats(String examId);
 }

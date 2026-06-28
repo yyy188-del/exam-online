@@ -216,8 +216,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         user.setSalt(passInfo.getSalt());
 
         // 保存角色
-        List<String> roles = new ArrayList<>();
-        roles.add("student");
+        List<String> roles = reqDTO.getRoles();
+        if (CollectionUtils.isEmpty(roles)) {
+            roles = new ArrayList<>();
+            roles.add("student");
+        }
         String roleIds = sysUserRoleService.saveRoles(user.getId(), roles);
         user.setRoleIds(roleIds);
         this.save(user);

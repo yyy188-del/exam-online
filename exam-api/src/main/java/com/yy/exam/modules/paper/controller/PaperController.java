@@ -51,7 +51,7 @@ public class PaperController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
+    @RequiresRoles(value = {"sa", "teacher", "student"}, logical = Logical.OR)
     @ApiOperation(value = "分页查找")
     @RequestMapping(value = "/paging", method = { RequestMethod.POST})
     public ApiRest<IPage<PaperListRespDTO>> paging(@RequestBody PagingReqDTO<PaperListReqDTO> reqDTO) {

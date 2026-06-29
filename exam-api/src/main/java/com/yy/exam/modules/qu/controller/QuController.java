@@ -87,7 +87,7 @@ public class QuController extends BaseController {
      * @param reqDTO
      * @return
      */
-    @RequiresRoles(value = {"sa", "teacher"}, logical = Logical.OR)
+    @RequiresRoles(value = {"sa", "teacher", "student"}, logical = Logical.OR)
     @ApiOperation(value = "查找详情")
     @RequestMapping(value = "/detail", method = {RequestMethod.POST})
     public ApiRest<QuDetailDTO> detail(@RequestBody BaseIdReqDTO reqDTO) {

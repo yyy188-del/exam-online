@@ -19,11 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-* <p>
-* 语言设置 服务实现类
-* </p>
-*
-*/
+ * 用户角色服务实现类
+ * 负责用户-角色关联关系的增删改查
+ * 以及用户角色判断（isStudent、isTeacher、isAdmin）
+ */
 @Service
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRole> implements SysUserRoleService {
 
@@ -93,34 +92,66 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         return "";
     }
 
+    /**
+     * 【新增功能：学生角色判断】
+     * 判断指定用户是否是学生
+     * 原理：查询 sys_user_role 表，看是否存在 user_id=? AND role_id='student' 的记录
+     * 实际执行的SQL：SELECT COUNT(*) FROM sys_user_role WHERE user_id=? AND role_id='student'
+     * 
+     * @param userId 用户ID
+     * @return true=是学生，false=不是学生
+     */
     @Override
     public boolean isStudent(String userId) {
 
-        // 学生角色
+        // 构造查询条件：user_id = ? AND role_id = 'student'
         QueryWrapper<SysUserRole> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(SysUserRole::getUserId, userId)
                 .eq(SysUserRole::getRoleId, "student");
 
+        // 如果查询到的记录数 > 0，说明该用户拥有学生角色
         return this.count(wrapper) > 0;
     }
 
+    /**
+     * 【新增功能：教师角色判断】
+     * 判断指定用户是否是教师
+     * 原理：查询 sys_user_role 表，看是否存在 user_id=? AND role_id='teacher' 的记录
+     * 实际执行的SQL：SELECT COUNT(*) FROM sys_user_role WHERE user_id=? AND role_id='teacher'
+     * 
+     * 这个方法是仪表盘、权限控制等模块的核心依赖
+     * 
+     * @param userId 用户ID
+     * @return true=是教师，false=不是教师
+     */
     @Override
     public boolean isTeacher(String userId) {
-        // 学生角色
+        // 构造查询条件：user_id = ? AND role_id = 'teacher'
         QueryWrapper<SysUserRole> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(SysUserRole::getUserId, userId)
                 .eq(SysUserRole::getRoleId, "teacher");
 
+        // 如果查询到的记录数 > 0，说明该用户拥有教师角色
         return this.count(wrapper) > 0;
     }
 
+    /**
+     * 【新增功能：管理员角色判断】
+     * 判断指定用户是否是超级管理员
+     * 原理：查询 sys_user_role 表，看是否存在 user_id=? AND role_id='sa' 的记录
+     * 实际执行的SQL：SELECT COUNT(*) FROM sys_user_role WHERE user_id=? AND role_id='sa'
+     * 
+     * @param userId 用户ID
+     * @return true=是管理员，false=不是管理员
+     */
     @Override
     public boolean isAdmin(String userId) {
-        // 学生角色
+        // 构造查询条件：user_id = ? AND role_id = 'sa'
         QueryWrapper<SysUserRole> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(SysUserRole::getUserId, userId)
                 .eq(SysUserRole::getRoleId, "sa");
 
+        // 如果查询到的记录数 > 0，说明该用户拥有管理员角色
         return this.count(wrapper) > 0;
     }
 }

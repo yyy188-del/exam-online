@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    PaperMapper 的 SQL 映射文件
+    所有试卷相关的自定义SQL查询都在这里定义
+    对应 Java 接口：com.yy.exam.modules.paper.mapper.PaperMapper
+-->
 <mapper namespace="com.yy.exam.modules.paper.mapper.PaperMapper">
 
+    <!--
+        BaseResultMap：基础结果映射
+        把数据库查询结果的列名映射到 Java 实体类 Paper 的属性名
+        例如：数据库列 user_id → Java 属性 userId
+    -->
     <resultMap id="BaseResultMap" type="com.yy.exam.modules.paper.entity.Paper">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
@@ -21,33 +31,64 @@
         <result column="limit_time" property="limitTime" />
     </resultMap>
 
+    <!-- 基础列名列表，方便在SQL中复用 -->
     <sql id="Base_Column_List">
         `id`,`user_id`,`exam_id`,`title`,`total_time`,`user_time`,`total_score`,`qualify_score`,`obj_score`,`subj_score`,`user_score`,`has_saq`,`state`,`create_time`,`update_time`,`limit_time`
     </sql>
 
+    <!--
+        ListResultMap：列表查询结果映射
+        继承 BaseResultMap 的所有字段映射，额外加上学生真实姓名
+        对应 Java 类型：PaperListRespDTO
+    -->
     <resultMap id="ListResultMap"
                extends="BaseResultMap"
                type="com.yy.exam.modules.paper.dto.response.PaperListRespDTO">
         <result column="real_name" property="realName" />
     </resultMap>
 
+    <!--
+        ============================================================
+        paging：成绩列表分页查询（核心查询方法）
+        作用：查询某个考试下所有学生的成绩列表，支持分页、筛选、排序
+        参数：PaperListReqDTO（包含考试ID、学生姓名、排序字段、是否仅看不及格等）
+        返回：Page<PaperListRespDTO>（分页结果，包含学生姓名）
+        ============================================================
+    -->
     <select id="paging" resultMap="ListResultMap">
         SELECT pp.*,uc.real_name FROM yy_paper pp
         LEFT JOIN sys_user uc ON pp.user_id=uc.id
+        <!--
+            <where> 标签的作用：
+            1. 如果内部所有条件都不成立，就不加 WHERE 关键字
+            2. 自动去掉第一个成立的条件的 AND 前缀
+        -->
         <where>
             <if test="query!=null">
+                <!-- 按考试ID筛选：只查某个考试的成绩 -->
                 <if test="query.examId!=null and query.examId!=''">
                     AND pp.exam_id=#{query.examId}
                 </if>
+                <!-- 按用户ID筛选：只查某个学生的成绩 -->
                 <if test="query.userId!=null and query.userId!=''">
                     AND pp.user_id=#{query.userId}
                 </if>
+                <!-- 按试卷状态筛选：1=进行中, 2=已完成 -->
                 <if test="query.state!=null">
                     AND pp.state=#{query.state}
                 </if>
+                <!-- 按学生姓名模糊搜索：LIKE '%张三%' -->
                 <if test="query.realName!=null and query.realName!=''">
                     AND uc.real_name  LIKE CONCAT('%',#{query.realName},'%')
                 </if>
+
+                <!--
+                    【新增功能：仅看不及格筛选】
+                    当 passFilter=1 时，筛选条件：
+                    1. pp.state = 2 → 只查已交卷的试卷（没交卷的没有分数）
+                    2. pp.user_score < pp.qualify_score → 实际分数低于及格线
+                    注意：&lt; 是 XML 中的小于号转义写法
+                -->
                 <if test="query.passFilter!=null and query.passFilter == 1">
                     AND pp.state = 2
                     AND pp.user_score &lt; pp.qualify_score
@@ -55,6 +96,13 @@
             </if>
         </where>
 
+        <!--
+            【新增功能：分数排序】
+            <choose> 标签相当于 Java 的 if-else if-else
+            - 如果前端传了 sortField='userScore' 且 sortOrder='ASC' → 按分数升序排列
+            - 如果前端传了 sortField='userScore' 且 sortOrder='DESC' → 按分数降序排列
+            - 否则（默认）→ 按创建时间倒序排列（最新的在前面）
+        -->
         <choose>
             <when test="query!=null and query.sortField=='userScore' and query.sortOrder=='ASC'">
                 ORDER BY pp.user_score ASC

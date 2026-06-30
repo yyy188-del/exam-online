@@ -104,6 +104,7 @@
                 {{ scope.row.state | paperStateFilter }}
               </template>
             </el-table-column>
+            </template>
         </data-table>
       </el-tab-pane>
     </el-tabs>

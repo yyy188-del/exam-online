@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container">
 
     <h3>组卷信息</h3>
@@ -180,10 +180,7 @@ export default {
         // 总分数
         totalScore: 0,
         // 题库列表
-        repoList: [],
-        // 开放类型
-        openType: 1
-      },
+        repoList: [],      },
       rules: {
         title: [
           { required: true, message: '考试名称不能为空！' }

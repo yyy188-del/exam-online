@@ -6,17 +6,7 @@
     :list-query="listQuery"
   >
     <template #filter-content>
-
-      <el-select v-model="listQuery.params.openType" class="filter-item" placeholder="开放类型" clearable>
-        <el-option
-          v-for="item in openTypes"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-
-      <el-date-picker
+<el-date-picker
         v-model="listQuery.params.startTime"
         class="filter-item"
         value-format="yyyy-MM-dd"
@@ -42,18 +32,7 @@
         label="考试名称"
         prop="title"
       />
-
-      <el-table-column
-        label="考试类型"
-        align="center"
-      >
-        <template v-slot="scope">
-          {{ scope.row.openType | examOpenType }}
-        </template>
-
-      </el-table-column>
-
-      <el-table-column
+<el-table-column
         label="考试时间"
         width="220px"
         align="center"
@@ -116,19 +95,7 @@ export default {
   components: { DataTable },
   data() {
     return {
-
-      openTypes: [
-        {
-          value: 1,
-          label: '完全开放'
-        },
-        {
-          value: 2,
-          label: '指定部门'
-        }
-      ],
-
-      listQuery: {
+listQuery: {
         current: 1,
         size: 10,
         params: {

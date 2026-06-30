@@ -11,11 +11,28 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
-* <p>
-* 考试数据传输类
-* </p>
-*
-*/
+ * 考试数据传输类（DTO）
+ * 【涉及功能：考试详情页标签页】
+ * 
+ * 这是考试基本信息的数据传输对象，是 ExamSaveReqDTO 的父类
+ * 
+ * 继承关系：
+ * ExamDTO（基本信息） → ExamSaveReqDTO（基本信息 + 题库设置）
+ * 
+ * 在考试详情页标签页中：
+ * - "基本信息"标签页的所有字段都来自 ExamDTO
+ * - "题库设置"标签页的数据来自 ExamSaveReqDTO.repoList
+ * 
+ * 字段说明：
+ * - title：考试名称，如"2024年Java期末考试"
+ * - content：考试描述/说明，如"本次考试共100分，90分钟完成"
+ * - state：考试状态（0=未开始，1=进行中，2=已禁用）
+ * - timeLimit：是否限时（true=限时考试，false=不限时）
+ * - startTime/endTime：考试开始/结束时间
+ * - totalScore：考试总分（由系统根据题库设置自动计算）
+ * - totalTime：考试时长（分钟）
+ * - qualifyScore：及格分数线
+ */
 @Data
 @ApiModel(value="考试", description="考试")
 public class ExamDTO implements Serializable {
@@ -68,24 +85,34 @@ public class ExamDTO implements Serializable {
     private Integer qualifyScore;
 
 
-
-
     /**
-     * 是否结束
-     * @return
+     * 获取考试的实际状态（动态计算）
+     * 
+     * 对于限时考试，状态不是固定的，而是根据当前时间动态计算：
+     * - 当前时间 < 开始时间 → 未开始（READY_START）
+     * - 当前时间 > 结束时间 → 已结束（OVERDUE）
+     * - 开始时间 < 当前时间 < 结束时间 且 未被禁用 → 进行中（ENABLE）
+     * 
+     * 对于不限时考试，直接返回数据库中的状态值
+     * 
+     * @return 考试的实际状态码
      */
     public Integer getState(){
 
+        // 只对限时考试进行动态状态计算
         if(this.timeLimit!=null && this.timeLimit){
 
+            // 当前时间 < 开始时间：考试还未开始
             if(System.currentTimeMillis() < startTime.getTime() ){
                 return ExamState.READY_START;
             }
 
+            // 当前时间 > 结束时间：考试已过期
             if(System.currentTimeMillis() > endTime.getTime()){
                 return ExamState.OVERDUE;
             }
 
+            // 开始时间 < 当前时间 < 结束时间 且 未被禁用：考试进行中
             if(System.currentTimeMillis() > startTime.getTime()
                     && System.currentTimeMillis() < endTime.getTime()
                     && !ExamState.DISABLED.equals(this.state)){
@@ -94,6 +121,7 @@ public class ExamDTO implements Serializable {
 
         }
 
+        // 不限时考试或限时考试被禁用时，直接返回数据库中的状态值
         return this.state;
     }
 }
